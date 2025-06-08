@@ -113,16 +113,44 @@ class RecipeList:
     def LoadFromJSON(self):
         pass
 
+def InterpretInput(text, choice):
+    if (choice.isnumeric()):
+        outputString = ""
+
+        match choice:
+            case '1':
+                # View all recipes
+                pass
+            case '2':
+                # Add a recipe
+                pass
+            case '3':
+                # Edit recipe
+                pass
+            case '4':
+                # Search by title
+                pass
+            case '5':
+                # Search by ingredient
+                pass
+            case '6':
+                # Delete a recipe
+                pass
+        
+        print(outputString)
+    else:
+        print("Invalid input. Try again.\n")
+        print(text)
+        choice = input("Type the number corresponding to the option you want to pick: ")
+        InterpretInput(text, choice)
+
 def main():
     #CLI interface
     print("Welcome to the Recipe Manager!")
-    print("Here are your options, type the number corresponding to the option you want to pick:\n")
-    print("1. View all recipes")
-    print("2. Add a recipe")
-    print("3. Edit a recipe")
-    print("4. Search recipes by title")
-    print("5. Search recipes by ingredient")
-    print("6. Delete a recipe")
+    options = "Here are your options:\n\n1. View all recipes\n2. Add a recipe\n3. Edit a recipe\n4. Search recipes by title\n5. Search recipes by ingredient\n6. Delete a recipe\n"
+    print(options)
+    choice = input("Type the number corresponding to the option you want to pick: ")
+    InterpretInput(options, choice)
 
 if __name__ == "__main__":
     main()
