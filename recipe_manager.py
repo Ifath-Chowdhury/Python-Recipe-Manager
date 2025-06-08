@@ -48,11 +48,13 @@ class RecipeList:
         for recipe in self.recipes:
             print(recipe.title)
     
-    def SearchByTitle(self, titleToSearch):
+    def SearchByTitle(self):
+        titleToSearch = input("Enter the name of the recipe to search for: ")
         SearchRecipeTitle = lambda recipe : recipe.title.lower() == titleToSearch.lower()
         return list(filter(SearchRecipeTitle, self.recipes))
     
-    def SearchByIngredient(self, ingredientToSearch):
+    def SearchByIngredient(self):
+        ingredientToSearch = input("Enter the name of the ingredient: ")
         listToReturn = []
 
         for recipe in self.recipes:
@@ -61,48 +63,51 @@ class RecipeList:
         
         return listToReturn
     
-    def EditRecipe(self, titleToSearch, title, ingredients, instructions):
+    def EditRecipe(self):
         # Search for recipe to edit
-        matchingRecipe = self.SearchByTitle(titleToSearch)
-        recipeToEdit = matchingRecipe[0]
+        titleToSearch = input("Enter the name of the recipe to edit:")
+        for recipe in self.recipes:
+            if titleToSearch.lower() == recipe.title.lower():
+                # Ask for new title
+                newTitle = input("Input the new title: ")
 
-        '''# Ask for new title
-        newTitle = input("Input the new title: ")
+                # Ask for new ingredients
+                newIngredients = []
+                numOfIngredients = input("How many ingredients to add? ")
+                if not numOfIngredients.isnumeric():
+                    while not numOfIngredients.isnumeric():
+                        numOfIngredients = input("We need a numeric input. How many ingredients to add? ")
+                else:
+                    print(f"Adding {numOfIngredients} ingredients: ")
+                    for i in range(1,numOfIngredients):
+                        newItemtoAdd = input("Input ingredient to add: ")
+                        newIngredients.append(newItemtoAdd)
+                        i += 1
 
-        # Ask for new ingredients
-        newIngredients = []
-        numOfIngredients = input("How many ingredients to add? ")
-        if not numOfIngredients.isnumeric():
-            while not numOfIngredients.isnumeric():
-                numOfIngredients = input("We need a numeric input. How many ingredients to add? ")
-        else:
-            print(f"Adding {numOfIngredients} ingredients: ")
-            for i in range(1,numOfIngredients):
-                newItemtoAdd = input("Input ingredient to add: ")
-                newIngredients.append(newItemtoAdd)
-                i += 1
+                # Ask for new instructions
+                newInstructions = []
+                numOfInstructions = input("How many instructions in the recipe? ")
+                if not numOfInstructions.isnumeric():
+                    while not numOfInstructions.isnumeric():
+                        numOfInstructions = input("We need a numeric input. How many instructions in the recipe? ")
+                else:
+                    print(f"Adding {numOfInstructions} instructions: ")
+                    for i in range(1,numOfInstructions):
+                        newItemtoAdd = input("Input instruction to add: ")
+                        newInstructions.append(newItemtoAdd)
+                        i += 1
+                
+                # Change recipe details
+                recipe.title = newTitle
+                recipe.ingredients = newIngredients
+                recipe.instructions = newInstructions
 
-        # Ask for new instructions
-        newInstructions = []
-        numOfInstructions = input("How many instructions in the recipe? ")
-        if not numOfInstructions.isnumeric():
-            while not numOfInstructions.isnumeric():
-                numOfInstructions = input("We need a numeric input. How many instructions in the recipe? ")
-        else:
-            print(f"Adding {numOfInstructions} instructions: ")
-            for i in range(1,numOfInstructions):
-                newItemtoAdd = input("Input instruction to add: ")
-                newInstructions.append(newItemtoAdd)
-                i += 1'''
-        
-        # Change recipe details
-        recipeToEdit.title = title
-        recipeToEdit.ingredients = ingredients
-        recipeToEdit.instructions = instructions
-
-        print("Recipe edited successfully")
+                print("Recipe edited successfully")
+            else:
+                print("No recipe matching that title was found")
     
-    def DeleteRecipe(self, titleToSearch):
+    def DeleteRecipe(self):
+        titleToSearch = input("Enter name of recipe to delete: ")
         matchingRecipe = self.SearchByTitle(titleToSearch)
         recipeToDelete = matchingRecipe[0]
         self.recipes.remove(recipeToDelete)
@@ -113,44 +118,65 @@ class RecipeList:
     def LoadFromJSON(self):
         pass
 
-def InterpretInput(text, choice):
+def InterpretInput(recipeList, text, choice):
     if (choice.isnumeric()):
         outputString = ""
 
         match choice:
             case '1':
                 # View all recipes
-                pass
+                recipeList.ViewAllRecipes()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
             case '2':
                 # Add a recipe
-                pass
+                recipeList.AddRecipe()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
             case '3':
                 # Edit recipe
-                pass
+                recipeList.EditRecipe()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
             case '4':
                 # Search by title
-                pass
+                recipeList.SearchByTitle()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
             case '5':
                 # Search by ingredient
-                pass
+                recipeList.SearchByIngredient()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
             case '6':
                 # Delete a recipe
-                pass
+                recipeList.DeleteRecipe()
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
+            case '7':
+                print("Exiting program")
         
         print(outputString)
     else:
         print("Invalid input. Try again.\n")
         print(text)
         choice = input("Type the number corresponding to the option you want to pick: ")
-        InterpretInput(text, choice)
+        InterpretInput(recipeList, text, choice)
 
 def main():
     #CLI interface
     print("Welcome to the Recipe Manager!")
-    options = "Here are your options:\n\n1. View all recipes\n2. Add a recipe\n3. Edit a recipe\n4. Search recipes by title\n5. Search recipes by ingredient\n6. Delete a recipe\n"
+    options = "Here are your options:\n\n1. View all recipes\n2. Add a recipe\n3. Edit a recipe\n4. Search recipes by title\n5. Search recipes by ingredient\n6. Delete a recipe\n7. Exit"
     print(options)
     choice = input("Type the number corresponding to the option you want to pick: ")
-    InterpretInput(options, choice)
+    recipeList = RecipeList()
+    InterpretInput(recipeList, options, choice)
 
 if __name__ == "__main__":
     main()
