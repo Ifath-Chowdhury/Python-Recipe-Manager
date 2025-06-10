@@ -12,7 +12,7 @@ class RecipeList:
     
     def AddRecipe(self):
         # Ask for new title
-        newTitle = input("Input the new title: ")
+        newTitle = input("\nInput the new title: ")
 
         # Ask for new ingredients
         newIngredients = []
@@ -22,7 +22,7 @@ class RecipeList:
                 numOfIngredients = input("We need a numeric input. How many ingredients to add? ")
         else:
             print(f"Adding {numOfIngredients} ingredients: ")
-            for i in range(1,numOfIngredients):
+            for i in range(0,int(numOfIngredients)):
                 newItemtoAdd = input("Input ingredient to add: ")
                 newIngredients.append(newItemtoAdd)
                 i += 1
@@ -35,7 +35,7 @@ class RecipeList:
                 numOfInstructions = input("We need a numeric input. How many instructions in the recipe? ")
         else:
             print(f"Adding {numOfInstructions} instructions: ")
-            for i in range(1,numOfInstructions):
+            for i in range(0,int(numOfInstructions)):
                 newItemtoAdd = input("Input instruction to add: ")
                 newInstructions.append(newItemtoAdd)
                 i += 1
@@ -44,28 +44,31 @@ class RecipeList:
         self.recipes.append(newRecipe)
     
     def ViewAllRecipes(self):
-        print("Listing all recipes:")
+        print("\nListing all recipes:")
         for recipe in self.recipes:
             print(recipe.title)
     
     def SearchByTitle(self):
-        titleToSearch = input("Enter the name of the recipe to search for: ")
+        titleToSearch = input("\nEnter the name of the recipe to search for: ")
         SearchRecipeTitle = lambda recipe : recipe.title.lower() == titleToSearch.lower()
-        return list(filter(SearchRecipeTitle, self.recipes))
+        results = list(filter(SearchRecipeTitle, self.recipes))
+        for result in results:
+            print(result)
     
     def SearchByIngredient(self):
-        ingredientToSearch = input("Enter the name of the ingredient: ")
-        listToReturn = []
+        ingredientToSearch = input("\nEnter the name of the ingredient: ")
+        results = []
 
         for recipe in self.recipes:
             if ingredientToSearch in recipe.ingredients:
-                listToReturn.append(recipe)
+                results.append(recipe)
         
-        return listToReturn
+        for result in results:
+            print(result)
     
     def EditRecipe(self):
         # Search for recipe to edit
-        titleToSearch = input("Enter the name of the recipe to edit:")
+        titleToSearch = input("\nEnter the name of the recipe to edit:")
         for recipe in self.recipes:
             if titleToSearch.lower() == recipe.title.lower():
                 # Ask for new title
@@ -107,10 +110,11 @@ class RecipeList:
                 print("No recipe matching that title was found")
     
     def DeleteRecipe(self):
-        titleToSearch = input("Enter name of recipe to delete: ")
-        matchingRecipe = self.SearchByTitle(titleToSearch)
-        recipeToDelete = matchingRecipe[0]
-        self.recipes.remove(recipeToDelete)
+        titleToSearch = input("\nEnter name of recipe to delete: ")
+        for recipe in self.recipes:
+            if titleToSearch.lower() == recipe.title.lower():
+                self.recipes.remove(recipe)
+        print("Recipe deleted")
     
     def SaveToJSON(self):
         pass
