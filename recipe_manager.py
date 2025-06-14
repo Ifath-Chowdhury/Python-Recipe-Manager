@@ -1,4 +1,8 @@
+from dataclasses import dataclass, asdict
+import json
+
 # Class for holding recipe details
+@dataclass
 class Recipe:
     def __init__(self, title, ingredients, instructions):
         self.title = title
@@ -6,6 +10,7 @@ class Recipe:
         self.instructions = instructions
 
 # Class for holding recipes
+@dataclass
 class RecipeList:
     def __init__(self):
         self.recipes = []
@@ -53,7 +58,7 @@ class RecipeList:
         SearchRecipeTitle = lambda recipe : recipe.title.lower() == titleToSearch.lower()
         results = list(filter(SearchRecipeTitle, self.recipes))
         for result in results:
-            print(result)
+            print(result.title)
     
     def SearchByIngredient(self):
         ingredientToSearch = input("\nEnter the name of the ingredient: ")
@@ -61,7 +66,7 @@ class RecipeList:
 
         for recipe in self.recipes:
             if ingredientToSearch in recipe.ingredients:
-                results.append(recipe)
+                results.append(recipe.title)
         
         for result in results:
             print(result)
@@ -117,10 +122,24 @@ class RecipeList:
         print("Recipe deleted")
     
     def SaveToJSON(self):
-        pass
+        jsonRecipeList = []
+        for recipe in self.recipes:
+            jsonRecipe = {'title': recipe.title, 'ingredients': recipe.ingredients, 'instructions': recipe.instructions}
+            jsonRecipeList.append(jsonRecipe)
+        
+        jsonObject = json.dumps(jsonRecipeList)
+        
+        with open("data/recipes.json", "w") as outfile:
+            outfile.write(jsonObject)
 
     def LoadFromJSON(self):
-        pass
+        #jsonRecipeList = [{"title": "asfd", "ingredients": ["as"], "instructions": ["asdf"]}, {"title": "asfd", "ingredients": ["asfdg", "d"], "instructions": ["wefgrfs", "rafds", "fra"]}]
+        with open("data/recipes.json", "r") as openfile:
+            jsonRecipeList = json.load(openfile)
+
+        for recipe in jsonRecipeList:
+            recipe = Recipe(recipe['title'], recipe['ingredients'], recipe['instructions'])
+            self.recipes.append(recipe)
 
 def InterpretInput(recipeList, text, choice):
     if (choice.isnumeric()):
@@ -128,42 +147,71 @@ def InterpretInput(recipeList, text, choice):
 
         match choice:
             case '1':
-                # View all recipes
-                recipeList.ViewAllRecipes()
+                # Save recipes
+                recipeList.SaveToJSON()
+                print("File saved to data/recipes.json successfully!")
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '2':
-                # Add a recipe
-                recipeList.AddRecipe()
+                # Load recipe
+                recipeList.LoadFromJSON()
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '3':
-                # Edit recipe
-                recipeList.EditRecipe()
+                # View all recipes
+                recipeList.ViewAllRecipes()
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '4':
-                # Search by title
-                recipeList.SearchByTitle()
+                # Add a recipe
+                recipeList.AddRecipe()
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '5':
-                # Search by ingredient
-                recipeList.SearchByIngredient()
+                # Edit recipe
+                recipeList.EditRecipe()
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '6':
-                # Delete a recipe
-                recipeList.DeleteRecipe()
+                # Search by title
+                recipeList.SearchByTitle()
+                entrToCont = input("Press ENTER to continue: ")
+
                 print(text)
                 choice = input("Type the number corresponding to the option you want to pick: ")
                 InterpretInput(recipeList, text, choice)
             case '7':
+                # Search by ingredient
+                recipeList.SearchByIngredient()
+                entrToCont = input("Press ENTER to continue: ")
+
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
+            case '8':
+                # Delete a recipe
+                recipeList.DeleteRecipe()
+                entrToCont = input("Press ENTER to continue: ")
+
+                print(text)
+                choice = input("Type the number corresponding to the option you want to pick: ")
+                InterpretInput(recipeList, text, choice)
+            case '9':
                 print("Exiting program")
         
         print(outputString)
@@ -176,7 +224,7 @@ def InterpretInput(recipeList, text, choice):
 def main():
     #CLI interface
     print("Welcome to the Recipe Manager!")
-    options = "Here are your options:\n\n1. View all recipes\n2. Add a recipe\n3. Edit a recipe\n4. Search recipes by title\n5. Search recipes by ingredient\n6. Delete a recipe\n7. Exit"
+    options = "Here are your options:\n\n1. Save Recipes\n2. Load Recipes\n3. View all recipes\n4. Add a recipe\n5. Edit a recipe\n6. Search recipes by title\n7. Search recipes by ingredient\n8. Delete a recipe\n9. Exit"
     print(options)
     choice = input("Type the number corresponding to the option you want to pick: ")
     recipeList = RecipeList()
