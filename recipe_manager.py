@@ -1,27 +1,29 @@
-from dataclasses import dataclass, asdict
 import json
 
 # Class for holding recipe details
-@dataclass
 class Recipe:
+    # Initialise recipe with title as string, ingredients and instructions as lists
     def __init__(self, title, ingredients, instructions):
         self.title = title
         self.ingredients = ingredients
         self.instructions = instructions
 
 # Class for holding recipes
-@dataclass
 class RecipeList:
+    # Initialise recipe list as a list that will hold recipes
     def __init__(self):
         self.recipes = []
     
+    # Method to create a new recipe and add it to the recipe list
     def AddRecipe(self):
         # Ask for new title
         newTitle = input("\nInput the new title: ")
 
         # Ask for new ingredients
+        # First ask for how many ingredients to add
         newIngredients = []
         numOfIngredients = input("How many ingredients to add? ")
+        # Repeat question if input was not numeric, else iteratively ask user to input ingredients
         if not numOfIngredients.isnumeric():
             while not numOfIngredients.isnumeric():
                 numOfIngredients = input("We need a numeric input. How many ingredients to add? ")
@@ -33,8 +35,10 @@ class RecipeList:
                 i += 1
 
         # Ask for new instructions
+        # First ask for how many instructions to add
         newInstructions = []
         numOfInstructions = input("How many instructions in the recipe? ")
+        # Repeat question if input was not numeric, else iteratively ask user to input instructions
         if not numOfInstructions.isnumeric():
             while not numOfInstructions.isnumeric():
                 numOfInstructions = input("We need a numeric input. How many instructions in the recipe? ")
@@ -45,22 +49,31 @@ class RecipeList:
                 newInstructions.append(newItemtoAdd)
                 i += 1
         
+        # Create new Recipe object with details provided by user and append it to recipe list
         newRecipe = Recipe(newTitle, newIngredients, newInstructions)
         self.recipes.append(newRecipe)
     
+    # Method to view all recipes
     def ViewAllRecipes(self):
+        # For loop to iterate through all recipes in recipe list and print the title
         print("\nListing all recipes:")
         for recipe in self.recipes:
             print(recipe.title)
     
+    # Method to search for a recipe by title
     def SearchByTitle(self):
+        # Retrieve input and use lambda to check if any recipe titles in recipe list match the input
         titleToSearch = input("\nEnter the name of the recipe to search for: ")
         SearchRecipeTitle = lambda recipe : recipe.title.lower() == titleToSearch.lower()
         results = list(filter(SearchRecipeTitle, self.recipes))
+        # Print all results found
         for result in results:
             print(result.title)
     
+    # Method to search for a recipe by title
     def SearchByIngredient(self):
+        # Retrieve input and use for loop to check if the ingredient given as input is in
+        # any of the ingredient lists in any of the recipes in recipe list
         ingredientToSearch = input("\nEnter the name of the ingredient: ")
         results = []
 
@@ -68,6 +81,7 @@ class RecipeList:
             if ingredientToSearch in recipe.ingredients:
                 results.append(recipe.title)
         
+        # Print all results found
         for result in results:
             print(result)
     
@@ -80,27 +94,31 @@ class RecipeList:
                 newTitle = input("Input the new title: ")
 
                 # Ask for new ingredients
+                # First ask for how many ingredients to add
                 newIngredients = []
                 numOfIngredients = input("How many ingredients to add? ")
+                # Repeat question if input was not numeric, else iteratively ask user to input ingredients
                 if not numOfIngredients.isnumeric():
                     while not numOfIngredients.isnumeric():
                         numOfIngredients = input("We need a numeric input. How many ingredients to add? ")
                 else:
                     print(f"Adding {numOfIngredients} ingredients: ")
-                    for i in range(1,numOfIngredients):
+                    for i in range(0,int(numOfIngredients)):
                         newItemtoAdd = input("Input ingredient to add: ")
                         newIngredients.append(newItemtoAdd)
                         i += 1
 
                 # Ask for new instructions
+                # First ask for how many instructions to add
                 newInstructions = []
                 numOfInstructions = input("How many instructions in the recipe? ")
+                # Repeat question if input was not numeric, else iteratively ask user to input instructions
                 if not numOfInstructions.isnumeric():
                     while not numOfInstructions.isnumeric():
                         numOfInstructions = input("We need a numeric input. How many instructions in the recipe? ")
                 else:
                     print(f"Adding {numOfInstructions} instructions: ")
-                    for i in range(1,numOfInstructions):
+                    for i in range(0,int(numOfInstructions)):
                         newItemtoAdd = input("Input instruction to add: ")
                         newInstructions.append(newItemtoAdd)
                         i += 1
@@ -114,33 +132,43 @@ class RecipeList:
             else:
                 print("No recipe matching that title was found")
     
+    # Method to delete recipe
     def DeleteRecipe(self):
+        # Retrieve input and use for loop to iterate through recipe list
         titleToSearch = input("\nEnter name of recipe to delete: ")
         for recipe in self.recipes:
+            # If matching recipe title is found then remove it from recipe list
             if titleToSearch.lower() == recipe.title.lower():
                 self.recipes.remove(recipe)
         print("Recipe deleted")
     
+    # Method to save recipe list as json
     def SaveToJSON(self):
+        # Turn existing recipes into dicts and put them in a list
         jsonRecipeList = []
         for recipe in self.recipes:
             jsonRecipe = {'title': recipe.title, 'ingredients': recipe.ingredients, 'instructions': recipe.instructions}
             jsonRecipeList.append(jsonRecipe)
         
+        # Turn the whole list into a json object and store it as a json file
         jsonObject = json.dumps(jsonRecipeList)
         
         with open("data/recipes.json", "w") as outfile:
             outfile.write(jsonObject)
 
+    # Method to load recipe list from a json file
     def LoadFromJSON(self):
-        #jsonRecipeList = [{"title": "asfd", "ingredients": ["as"], "instructions": ["asdf"]}, {"title": "asfd", "ingredients": ["asfdg", "d"], "instructions": ["wefgrfs", "rafds", "fra"]}]
+        # Open the json file
         with open("data/recipes.json", "r") as openfile:
             jsonRecipeList = json.load(openfile)
 
+        # For each recipe in the json file, instantiate it as a Recipe class object and append it to
+        # the recipe list
         for recipe in jsonRecipeList:
             recipe = Recipe(recipe['title'], recipe['ingredients'], recipe['instructions'])
             self.recipes.append(recipe)
 
+# Fuction to interpret user input and execute functions based on said input
 def InterpretInput(recipeList, text, choice):
     if (choice.isnumeric()):
         outputString = ""
